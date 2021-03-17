@@ -11,7 +11,7 @@ GET-CAMERAS library for video recording, both mono and color cameras
 
 ```sh
 git https://github.com/AdiAlbum1/GET-CAMERAS-video-recorder
-cd cam-video-recorder
+cd GET-CAMERAS-video-recorder
 pip install -r requirments.txt
 ```
 
