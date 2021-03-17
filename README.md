@@ -6,7 +6,6 @@ GET-CAMERAS library for video recording, both mono and color cameras
 
 - [Installation](#installation)
 - [Usage](#usage)
-- [Examples](#Examples)
 
 ## Installation
 
