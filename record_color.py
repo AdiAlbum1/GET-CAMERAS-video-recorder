@@ -7,7 +7,7 @@ import cv2
 
 from datetime import datetime
 
-from parameters import *
+from config import *
 
 def get_output_vid_name():
     now = datetime.now()
