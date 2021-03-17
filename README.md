@@ -27,3 +27,5 @@ Mono camera:
 ```sh
 python record_mono.py
 ```
+
+Results will be saved, timestamped, to outputs folder
