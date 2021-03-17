@@ -1,4 +1,4 @@
-# Get-Cameras Video Recorder
+# GET-CAMERAS Video Recorder
 
 GET-CAMERAS library for video recording, both mono and color cameras
 
