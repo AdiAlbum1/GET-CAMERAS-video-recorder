@@ -6,10 +6,7 @@ import cv2
 
 from datetime import datetime
 
-# Parameters
-GAIN = 10.0
-FPS = 30.0
-EXPOSURE_TIME = 10000
+from parameters import *
 
 def get_output_vid_name():
     now = datetime.now()
