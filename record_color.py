@@ -34,14 +34,16 @@ def main():
     # set continuous acquisition
     cam.TriggerMode.set(gx.GxSwitchEntry.OFF)
 
-    # set auto exposure
-    cam.ExposureAuto.set(True)
+    # set auto exposure         Off: 0, Continuous: 1, Once: 2
+    cam.ExposureAuto.set(1)
+    cam.AutoExposureTimeMax.set(76923.0)
 
-    # set auto gain         1 - continuous gain
+    # set auto gain             Off: 0, Continuous: 1, Once: 2
     cam.GainAuto.set(1)
 
-    # set target FPS
-    cam.AcquisitionFrameRate.set(14.9)
+    # set target FPS            Off: 0, On: 1
+    cam.AcquisitionFrameRateMode.set(1)
+    cam.AcquisitionFrameRate.set(13.0)
 
     # get height, width & FPS
     height = cam.Height.get()
@@ -50,7 +52,7 @@ def main():
 
     # open output video
     output_vid_name = get_output_vid_name()
-    out = cv2.VideoWriter(output_vid_name,cv2.VideoWriter_fourcc(*'DIVX'), fps, (width ,height))
+    out = cv2.VideoWriter(output_vid_name,cv2.VideoWriter_fourcc(*'DIVX'), fps, (916, 612))
 
     # get param of improving image quality
     if cam.GammaParam.is_readable():
@@ -76,6 +78,7 @@ def main():
     while True:
         # get raw image
         raw_image = cam.data_stream[0].get_image()
+
         if raw_image is None:
             print("Getting image failed.")
             continue
@@ -93,13 +96,14 @@ def main():
         if numpy_image is None:
             continue
 
-        # Convert color format
+        # convert color format
         image = cv2.cvtColor(numpy_image, cv2.COLOR_RGB2BGR)
+        # resize image
+        image = cv2.resize(image, (916, 612), cv2.INTER_NEAREST)
 
         # Write video to file
         out.write(image)
 
-        image = cv2.resize(image, (916, 612))
         # display image with opencv
         cv2.imshow("Image", image)
 

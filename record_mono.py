@@ -6,13 +6,11 @@ import cv2
 
 from datetime import datetime
 
-from config import *
-
 def get_output_vid_name():
     now = datetime.now()
     pre_str = "outputs/"
-    dt_string = now.strftime("%d/%m/%Y_%H:%M:%S")
-    post_str = ".mp4"
+    dt_string = now.strftime("%d_%m_%Y-%H_%M_%S")
+    post_str = ".avi"
 
     return pre_str + dt_string + post_str
 
@@ -37,26 +35,29 @@ def main():
         cam.close_device()
         return
 
-    # Get height, width & FPS
-    height = cam.Height.get()
-    width = cam.Width.get()
-    fps = FPS
-
     # set continuous acquisition
     cam.TriggerMode.set(gx.GxSwitchEntry.OFF)
 
-    # set exposure
-    cam.ExposureTime.set(EXPOSURE_TIME)
+    # set auto exposure         Off: 0, Continuous: 1, Once: 2
+    cam.ExposureAuto.set(1)
+    cam.AutoExposureTimeMax.set(76923.0)
 
-    # set gain
-    cam.Gain.set(GAIN)
+    # set auto gain             Off: 0, Continuous: 1, Once: 2
+    cam.GainAuto.set(1)
 
-    # set FPS
-    cam.AcquisitionFrameRate.set(FPS)
+    # set target FPS            Off: 0, On: 1
+    cam.AcquisitionFrameRateMode.set(1)
+    cam.AcquisitionFrameRate.set(13.0)
+
+    # get height, width & FPS
+    height = cam.Height.get()
+    width = cam.Width.get()
+    fps = cam.CurrentAcquisitionFrameRate.get()
+
 
     # open output video
     output_vid_name = get_output_vid_name()
-    out = cv2.VideoWriter(output_vid_name,cv2.VideoWriter_fourcc(*'MP4V'), fps, (width,height))
+    out = cv2.VideoWriter(output_vid_name,cv2.VideoWriter_fourcc(*'DIVX'), fps, (916, 612))
 
     # set the acq buffer count
     cam.data_stream[0].set_acquisition_buffer_number(1)
@@ -75,20 +76,23 @@ def main():
         if numpy_image is None:
             continue
 
-        # Write video to file
-        out.write(pimg)
+        # convert color format
+        image = cv2.cvtColor(numpy.asarray(numpy_image),cv2.COLOR_GRAY2BGR)
+        # resize image
+        image = cv2.resize(image, (916, 612), cv2.INTER_NEAREST)
 
-        # display image with opencv
-        pimg = cv2.cvtColor(numpy.asarray(numpy_image),cv2.COLOR_GRAY2BGR)
-        cv2.imshow("Image",pimg)
+        # Write video to file
+        out.write(image)
+
+        cv2.imshow("Image", image)
 
         # Press Q on keyboard to stop recording
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
         
         # print height, width, and frame ID of the acquisition image
-        print("Frame ID: %d   Height: %d   Width: %d"
-              % (raw_image.get_frame_id(), raw_image.get_height(), raw_image.get_width()))
+        print("Frame ID: %d\tHeight: %d\tWidth: %d\tFPS: %.2f"
+              % (raw_image.get_frame_id(), raw_image.get_height(), raw_image.get_width(), cam.CurrentAcquisitionFrameRate.get()))
 
     # When everything done, release the video write objects
     out.release()
